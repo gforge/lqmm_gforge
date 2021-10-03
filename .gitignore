@@ -17,3 +17,5 @@ inst/doc
 doc
 Meta
 *.tex
+
+.vscode
