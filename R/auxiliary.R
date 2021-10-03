@@ -20,6 +20,27 @@
   }
 }
 
+
+#' Retrieves an expression from parent environments
+#'
+#' As we update models objects may end up in different environments
+#' and we need to be able to locate them regardless of where they exist.
+#' This function traverses through all parent environments in search for
+#' the object of interest.
+#'
+#' @param expr The expression to search for
+#'
+#' @return The evaluated object
+retrieveExpression <- function(expr) {
+  for (level in 1:sys.nframe()) {
+    out <- tryCatch(eval(expr, envir = parent.frame(n = level)), error = \(e) NULL)
+    if (!is.null(out)) {
+      return(out)
+    }
+  }
+  stop("Failed to retrieve value")
+}
+
 ##
 
 allVarsRec <- function(object) {
@@ -67,15 +88,15 @@ bandwidth.rq <- function(p, n, hs = TRUE, alpha = 0.05) {
 
 
 #' The Asymmetric Laplace Distribution
-#' 
+#'
 #' Density, distribution function, quantile function and random generation for
 #' the asymmetric Laplace distribution.
-#' 
-#' 
+#'
+#'
 #' The asymmetric Laplace distribution with parameters (mu, sigma, tau) has
 #' density \deqn{f(x) = \tau(1-\tau)/\sigma e^{-1/(2\sigma) (\theta max(x,0) +
 #' (1 - \theta) max(-x,0))}}
-#' 
+#'
 #' @aliases pal qal ral dal
 #' @param x vector of quantiles (\code{dal}, \code{pal}) or probabilities
 #' (\code{qal}).
@@ -146,18 +167,18 @@ qal <- function(x, mu = 0, sigma = 1, tau = 0.5) {
 
 
 #' Functions for Asymmetric Laplace Distribution Parameters
-#' 
+#'
 #' Accessory functions.
-#' 
+#'
 #' \code{meanAL} computes the mean of an asymmetric Laplace with parameters
 #' \code{mu}, \code{sigma} and \code{tau}.
-#' 
+#'
 #' \code{varAL} computes the variance of an asymmetric Laplace with parameters
 #' \code{sigma} and \code{tau}.
-#' 
+#'
 #' \code{invvarAL} computes the scale parameter of an asymmetric Laplace with
 #' parameter \code{tau} and variance \code{x}.
-#' 
+#'
 #' @aliases varAL invvarAL meanAL
 #' @param mu location parameter.
 #' @param sigma scale parameter.
@@ -201,16 +222,16 @@ invvarAL <- function(x, tau) {
 
 
 #' Maximum Likelihood Estimation of Asymmetric Laplace Distribution
-#' 
+#'
 #' This function estimates the parameters of an asymmetric Laplace distribution
 #' for a sample.
-#' 
-#' 
+#'
+#'
 #' @param x a numeric vector.
 #' @return
-#' 
+#'
 #' an object of class \code{list} containing the following components:
-#' 
+#'
 #' \item{m}{location parameter} \item{sigma}{scale parameter}
 #' \item{tau}{skewness parameter} \item{r}{number of iterations}
 #' @author Marco Geraci
