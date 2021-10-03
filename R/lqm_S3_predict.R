@@ -28,14 +28,12 @@ predict.lqm <- function(object, newdata, interval = FALSE,
 
   if (missing(newdata)) {
     X <- object$x
-    # yhat <- X%*%as.matrix(object$theta)
   } else {
     objt <- terms(object)
     Terms <- delete.response(objt)
     m <- model.frame(Terms, newdata, na.action = na.action, xlev = object$levels)
     if (!is.null(cl <- attr(Terms, "dataClasses"))) .checkMFClasses(cl, m)
     X <- model.matrix(Terms, m, contrasts.arg = object$contrasts)
-    # yhat <- X%*%as.matrix(object$theta)
   }
 
   if (nq == 1) {

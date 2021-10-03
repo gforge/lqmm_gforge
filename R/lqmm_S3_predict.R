@@ -58,7 +58,7 @@ predict.lqmm <- function(object, level = 0, newdata, ...) {
   revOrder <- object$revOrder
   if (!missing(newdata)) {
     if (level != 0) stop("The newdata argument is only implemented for non-random effect estimates")
-    modelData <- buildModelData(object$call, data = newdata, existingModelDF = object$mmf_df)
+    modelData <- buildModelData(object$call, data = newdata, xlev = object$levels)
     mmf <- modelData$mmf
     revOrder <- 1:nrow(mmf)
   }
