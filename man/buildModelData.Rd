@@ -4,7 +4,7 @@
 \alias{buildModelData}
 \title{Build model data}
 \usage{
-buildModelData(modelCall, data, extraModelFrameArgs = list(), existingModelDF)
+buildModelData(modelCall, data, extraModelFrameArgs = list(), xlev = NULL)
 }
 \arguments{
 \item{modelCall}{The [lqmm]-call}
@@ -13,9 +13,8 @@ buildModelData(modelCall, data, extraModelFrameArgs = list(), existingModelDF)
 
 \item{extraModelFrameArgs}{A `list` with the extra arguments to [stats::model.frame]}
 
-\item{existingModelDF}{If the data is to have the same structure as the previous
-we need to provide the original data with corresponding `factor` variables so that
-we don't drop factors that should have been retained.}
+\item{xlev}{a named list of character vectors giving the full set of levels
+    to be assumed for each factor.}
 }
 \value{
 A list with `dataMix`, `mmf`, `mmf_df`, `group`, `ngroups` and some attributes

@@ -5,13 +5,11 @@
 #' @param modelCall The [lqmm]-call
 #' @param data The `data.frame` that the object has been called with
 #' @param extraModelFrameArgs A `list` with the extra arguments to [stats::model.frame]
-#' @param existingModelDF If the data is to have the same structure as the previous
-#'  we need to provide the original data with corresponding `factor` variables so that
-#'  we don't drop factors that should have been retained.
 #'
 #' @return A list with `dataMix`, `mmf`, `mmf_df`, `group`, `ngroups` and some attributes
 #'  used in the [lqmm] fit.
-buildModelData <- function(modelCall, data, extraModelFrameArgs = list(), existingModelDF) {
+#' @inheritParams stats::model.frame
+buildModelData <- function(modelCall, data, extraModelFrameArgs = list(), xlev = NULL) {
   stopifnot(is.list(extraModelFrameArgs))
 
   # Handles nested environments
@@ -23,7 +21,8 @@ buildModelData <- function(modelCall, data, extraModelFrameArgs = list(), existi
   # Build basic input data.frame
   mfArgs <- c(list(formula = asOneFormula(random, fixed, groupFormula[[2]]),
                    data = retrieveExpression(data),
-                   na.action = modelCall$na.action),
+                   na.action = modelCall$na.action,
+                   xlev = xlev),
               extraModelFrameArgs)
   dataMix <- do.call("model.frame", mfArgs, envir = parent.frame())
 
@@ -43,25 +42,8 @@ buildModelData <- function(modelCall, data, extraModelFrameArgs = list(), existi
 
   # Prep mmf
   mmf_df = model.frame(fixed, dataMix)
+  orgLevels <- .getXlevels(attr(dataMix, "terms"), dataMix)
 
-  # Fix factors so that they match the original model's factors
-  if (!missing(existingModelDF)) {
-    stopifnot(is.data.frame(existingModelDF))
-    factorVariables <- names(existingModelDF)[sapply(existingModelDF, is.factor)]
-    for (varname in factorVariables) {
-      newDataLevels <- levels(newdata[[varname]])
-      orgDataLevels <- levels(existingModelDF[[varname]])
-      existingLevels <- newDataLevels %in% orgDataLevels
-      if (any(!existingLevels)) {
-        stop("The variable ", varname, " has levels not present in original model data: ",
-             paste(newDataLevels[existingLevels], collapse = ", "))
-      }
-
-      if (length(orgDataLevels) > length(newDataLevels)) {
-        newdata[[varname]] <- factor(newdata[[varname]], levels = orgDataLevels)
-      }
-    }
-  }
   mmf <- model.matrix(as.formula(fixed), data = mmf_df)
 
   structure(list(dataMix = dataMix,
@@ -74,7 +56,8 @@ buildModelData <- function(modelCall, data, extraModelFrameArgs = list(), existi
             # These variables serve no other purpose in the fit
             mfArgs = mfArgs,
             revOrder = revOrder,
-            origOrder = origOrder)
+            origOrder = origOrder,
+            levels = orgLevels)
 }
 
 #' Build the mixed effects model

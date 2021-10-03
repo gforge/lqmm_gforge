@@ -348,6 +348,7 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
   fit$InitialPar <- list(theta = theta_0, sigma = sigma_0)
   fit$control <- control
   fit$cov_name <- cov_name
+  fit$levels <- attr(modelData, "levels")
   # attr(fit$cov_name, "cov_type") <- cov.sel(cov_name)
   fit$mfArgs <- modelData$mfArgs
 
