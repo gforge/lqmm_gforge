@@ -1,11 +1,14 @@
 Package: lqmm
 Type: Package
 Title: Linear Quantile Mixed Models
-Version: 1.5.5
-Date: 2019-12-12
-Author: Marco Geraci
-Maintainer: Marco Geraci <geraci@mailbox.sc.edu>
-Depends: R (>= 3.0.0)
+Version: 1.6.0
+Date: 2021-10-03
+Authors@R: c(person("Marco", "Geraci", role = c("aut", "cre"),
+                     email = "geraci@mailbox.sc.edu"),
+              person("Max", "Gordon", role = "ctb",
+                     email = "max@gforge.se"))
+                     Author: 
+Depends: R (>= 4.1.1)
 Imports: stats, utils, nlme (>= 3.1-124), SparseGrid
 Description: Functions to fit quantile regression models for hierarchical
     data (2-level nested designs) as described in Geraci and
@@ -19,6 +22,4 @@ LazyLoad: yes
 RoxygenNote: 7.0.2
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2019-12-12 20:31:07 UTC; geraci
 Repository: CRAN
-Date/Publication: 2019-12-13 05:40:13 UTC
