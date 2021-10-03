@@ -52,6 +52,22 @@ boot.lqm <- function(object, R = 50, seed = round(runif(1, 1, 10000)), startQR =
   return(bootmat)
 }
 
+
+
+#' Summary for a \code{boot.lqm} Object
+#' 
+#' Summary method for class \code{boot.lqm}.
+#' 
+#' 
+#' @param object an object of \code{\link{class}} \code{lqm}.
+#' @param alpha numeric value for the interval confidence level
+#' (\code{1-alpha}).
+#' @param digits a non-null value for digits specifies the minimum number of
+#' significant digits to be printed in values.
+#' @param \dots not used.
+#' @author Marco Geraci
+#' @seealso \code{\link{boot.lqm}}, \code{\link{lqm}},
+#' @keywords summary bootstrap
 summary.boot.lqm <- function(object, alpha = 0.05, digits = max(3, getOption("digits") - 3), ...) {
   tau <- attr(object, "tau")
   nq <- length(tau)

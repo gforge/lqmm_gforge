@@ -1,3 +1,14 @@
+#' Extract LQMM Coefficients
+#' 
+#' \code{coef} extracts model coefficients from \code{lqmm} objects.
+#' 
+#' 
+#' @param object a fitted object of \code{\link{class}} "lqmm".
+#' @param \dots not used.
+#' @return a vector for single quantiles or a matrix for multiple quantiles.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}} \code{\link{summary.lqmm}}
+#' @keywords coefficients
 coef.lqmm <- function(object, ...) {
   tau <- object$tau
   nq <- length(tau)
@@ -10,6 +21,29 @@ coef.lqmm <- function(object, ...) {
   return(ans)
 }
 
+
+
+#' Extract Random Effects
+#' 
+#' This function computes random effects for a linear quantile mixed model.
+#' 
+#' The prediction of the random effects is done via estimated best linear
+#' prediction (Geraci and Bottai, 2014). The generic function \code{ranef} is
+#' imported from the \code{nlme} package (Pinheiro et al, 2014).
+#' 
+#' @aliases ranef ranef.lqmm
+#' @param object an object of \code{\link{class}} \code{lqmm}.
+#' @param \dots not used.
+#' @return a data frame or a list of data frames of predicted random effects.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}}, \code{\link{coef.lqmm}}
+#' @references Geraci M and Bottai M (2014). Linear quantile mixed models.
+#' Statistics and Computing, 24(3), 461--479. doi: 10.1007/s11222-013-9381-9.
+#' 
+#' Pinheiro J, Bates D, DebRoy S, Sarkar D and R Core Team (2014). nlme: Linear
+#' and Nonlinear Mixed Effects Models. R package version 3.1-117,
+#' \url{https://CRAN.R-project.org/package=nlme}.
+#' @keywords random effects coefficients
 ranef.lqmm <- function(object, ...) {
   tau <- object$tau
   nq <- length(tau)
@@ -78,6 +112,60 @@ ranef.lqmm <- function(object, ...) {
   return(ans)
 }
 
+
+
+#' Predictions from an \code{lqmm} Object
+#' 
+#' The predictions at level 0 correspond to predictions based only on the fixed
+#' effects estimates. The predictions at level 1 are obtained by adding the
+#' best linear predictions of the random effects to the predictions at level 0.
+#' See details for interpretation. The function \code{predint} will produce
+#' 1-alpha confidence intervals based on bootstrap centiles.
+#' 
+#' 
+#' As discussed by Geraci and Bottai (2014), integrating over the random
+#' effects will give "weighted averages" of the cluster-specific quantile
+#' effects. These may be interpreted strictly as population regression
+#' quantiles only for the median (\code{tau=0.5}). Therefore, predictions at
+#' the population level (\code{code=0}) should be interpreted analogously.
+#' 
+#' @aliases predint predint.lqmm predict.lqmm
+#' @param object an \code{lqmm} object.
+#' @param level an optional integer vector giving the level of grouping to be
+#' used in obtaining the predictions.
+#' @param alpha 1-\code{alpha} is the confidence level.
+#' @param R number of bootstrap replications.
+#' @param seed optional random number generator seed.
+#' @param \dots not used.
+#' @return a vector or a matrix of predictions for \code{predict.lqmm}. A data
+#' frame or a list of data frames for \code{predint.lqmm} containing
+#' predictions, lower and upper bounds of prediction intervals, and standard
+#' errors.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}}, \code{\link{ranef.lqmm}},
+#' \code{\link{coef.lqmm}}
+#' @references Geraci M and Bottai M (2014). Linear quantile mixed models.
+#' Statistics and Computing, 24(3), 461--479.
+#' @keywords prediction
+#' @examples
+#' 
+#' ## Orthodont data
+#' data(Orthodont)
+#' 
+#' # Random intercept model
+#' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
+#' 	tau = c(0.1,0.5,0.9), data = Orthodont)
+#' 
+#' # Predict (y - Xb)	
+#' predict(fitOi.lqmm, level = 0)
+#' 
+#' # Predict (y - Xb - Zu)
+#' predict(fitOi.lqmm, level = 1)
+#' 
+#' # 95% confidence intervals
+#' predint(fitOi.lqmm, level = 0, alpha = 0.05)
+#' 
+#' 
 predict.lqmm <- function(object, level = 0, ...) {
   tau <- object$tau
   nq <- length(tau)
@@ -169,10 +257,44 @@ predint.lqmm <- function(object, level = 0, alpha = 0.05, R = 50, seed = round(r
   return(ans)
 }
 
+
+
+#' Residuals from an \code{lqmm} Object
+#' 
+#' The residuals at level 0 correspond to population residuals (based only on
+#' the fixed effects estimates). The residuals at level 1 are obtained by
+#' adding the best linear predictions of the random effects to the predictions
+#' at level 0 and the subtracting these from the model response.
+#' 
+#' 
+#' @param object an \code{lqmm} object.
+#' @param level an optional integer vector giving the level of grouping to be
+#' used in obtaining the predictions. Level zero corresponds to the population
+#' residuals.
+#' @param \dots not used.
+#' @return a matrix of residuals.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}}, \code{\link{predict.lqmm}},
+#' \code{\link{coef.lqmm}}, \code{\link{ranef.lqmm}},
+#' @references Geraci M and Bottai M (2014). Linear quantile mixed models.
+#' Statistics and Computing, 24(3), 461--479. doi: 10.1007/s11222-013-9381-9.
+#' @keywords residuals
 residuals.lqmm <- function(object, level = 0, ...) {
   object$y[object$revOrder] - predict(object, level = level)
 }
 
+
+
+#' Extract Log-Likelihood
+#' 
+#' \code{logLik.lqmm} extracts the log-likelihood of a fitted LQMM.
+#' 
+#' 
+#' @param object an object of \code{\link{class}} "lqmm".
+#' @param \dots not used.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}} \code{\link{AIC}}
+#' @keywords models
 logLik.lqmm <- function(object, ...) {
   tdf <- object$edf + 1
   tau <- object$tau
@@ -193,6 +315,40 @@ logLik.lqmm <- function(object, ...) {
   return(ans)
 }
 
+
+
+#' Summary for an \code{lqmm} Object
+#' 
+#' Summary method for class \code{lqmm}.
+#' 
+#' \code{print.summary.lqmm} formats the coefficients, standard errors, etc.
+#' and additionally gives `significance stars'.
+#' 
+#' @param object an object of \code{\link{class}} \code{lqmm}.
+#' @param method specifies the method used to compute standard errors.
+#' Currently, only the bootstrap method ("boot") is available.
+#' @param alpha significance level.
+#' @param covariance logical flag. If \code{TRUE} the covariance matrix of the
+#' bootstrap estimates is provided.
+#' @param \dots see \code{\link{boot.lqmm}} for additional arguments.
+#' @return an object of class \code{summary.lqmm}. The function
+#' \code{summary.lqmm} computes and returns a list of summary statistics of the
+#' fitted linear quantile mixed model given in \code{object}, using the
+#' components (list elements) from its argument, plus
+#' 
+#' \item{Cov}{the covariance matrix obtained from the bootstrapped estimates
+#' (if \code{covariance = TRUE}).} \item{tTable}{a matrix with estimates,
+#' standard errors, etc.} \item{B}{the matrix of all bootstrapped parameters.}
+#' @author Marco Geraci
+#' @seealso \code{\link{print.summary.lqmm}} \code{\link{lqmm}}
+#' @keywords bootstrap standard errors
+#' @examples
+#' 
+#' data(Orthodont)
+#' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
+#' 	tau = c(0.1,0.5,0.9), data = Orthodont)
+#' summary(fitOi.lqmm)
+#' 
 summary.lqmm <- function(object, method = "boot", alpha = 0.05, covariance = FALSE, ...) {
   tau <- object$tau
   nq <- length(tau)
@@ -266,6 +422,20 @@ summary.lqmm <- function(object, method = "boot", alpha = 0.05, covariance = FAL
   return(object)
 }
 
+
+
+#' Print an \code{lqmm} Summary Object
+#' 
+#' Print summary of an \code{lqmm} object.
+#' 
+#' 
+#' @param x a \code{summary.lqmm} object.
+#' @param digits a non-null value for digits specifies the minimum number of
+#' significant digits to be printed in values.
+#' @param \dots not used.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}}, \code{\link{summary.lqmm}}
+#' @keywords print summary
 print.summary.lqmm <- function(x, digits = max(3, getOption("digits") - 3), ...) {
   tau <- x$tau
   nq <- length(tau)

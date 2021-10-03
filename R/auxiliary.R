@@ -64,6 +64,29 @@ bandwidth.rq <- function(p, n, hs = TRUE, alpha = 0.05) {
 ##########################################################################################
 # Asymmetric Laplace distribution
 
+
+
+#' The Asymmetric Laplace Distribution
+#' 
+#' Density, distribution function, quantile function and random generation for
+#' the asymmetric Laplace distribution.
+#' 
+#' 
+#' The asymmetric Laplace distribution with parameters (mu, sigma, tau) has
+#' density \deqn{f(x) = \tau(1-\tau)/\sigma e^{-1/(2\sigma) (\theta max(x,0) +
+#' (1 - \theta) max(-x,0))}}
+#' 
+#' @aliases pal qal ral dal
+#' @param x vector of quantiles (\code{dal}, \code{pal}) or probabilities
+#' (\code{qal}).
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param sigma positive scale parameter.
+#' @param tau skewness parameter (0,1).
+#' @param log logical; if \code{TRUE}, probabilities are log--transformed.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}}, \code{\link{lqm}}
+#' @keywords asymmetric Laplace distribution
 dal <- function(x, mu = 0, sigma = 1, tau = 0.5, log = FALSE) {
   eps <- .Machine$double.eps^(2 / 3)
   if (any(tau > 1) | any(tau < 0)) stop("Parameter 'tau' must be in [0,1]")
@@ -120,6 +143,32 @@ qal <- function(x, mu = 0, sigma = 1, tau = 0.5) {
   )
 }
 
+
+
+#' Functions for Asymmetric Laplace Distribution Parameters
+#' 
+#' Accessory functions.
+#' 
+#' \code{meanAL} computes the mean of an asymmetric Laplace with parameters
+#' \code{mu}, \code{sigma} and \code{tau}.
+#' 
+#' \code{varAL} computes the variance of an asymmetric Laplace with parameters
+#' \code{sigma} and \code{tau}.
+#' 
+#' \code{invvarAL} computes the scale parameter of an asymmetric Laplace with
+#' parameter \code{tau} and variance \code{x}.
+#' 
+#' @aliases varAL invvarAL meanAL
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param tau skewness parameter.
+#' @param x numeric value.
+#' @author Marco Geraci
+#' @seealso \code{\link{dal}}, \code{\link{mleAL}}
+#' @references Yu K and Zhang J (2005). A three-parameter asymmetric Laplace
+#' distribution and its extension. Communications in Statistics-Theory and
+#' Methods 34, 1867--1879.
+#' @keywords asymmetric Laplace distribution maximum likelihood estimation
 meanAL <- function(mu, sigma, tau) {
   eps <- .Machine$double.eps^(2 / 3)
   if (any(tau > 1) | any(tau < 0)) stop("Parameter 'tau' must be in [0,1]")
@@ -149,6 +198,27 @@ invvarAL <- function(x, tau) {
   sqrt(x * (tau * (1 - tau))^2 / (1 - 2 * tau + 2 * tau^2))
 }
 
+
+
+#' Maximum Likelihood Estimation of Asymmetric Laplace Distribution
+#' 
+#' This function estimates the parameters of an asymmetric Laplace distribution
+#' for a sample.
+#' 
+#' 
+#' @param x a numeric vector.
+#' @return
+#' 
+#' an object of class \code{list} containing the following components:
+#' 
+#' \item{m}{location parameter} \item{sigma}{scale parameter}
+#' \item{tau}{skewness parameter} \item{r}{number of iterations}
+#' @author Marco Geraci
+#' @seealso \code{\link{dal}}, \code{\link{meanAL}}
+#' @references Yu K and Zhang J (2005). A three-parameter asymmetric Laplace
+#' distribution and its extension. Communications in Statistics-Theory and
+#' Methods 34, 1867--1879.
+#' @keywords asymmetric Laplace distribution maximum likelihood estimation
 mleAL <- function(x) {
   tau <- 0.5
   m <- as.numeric(quantile(x, tau))

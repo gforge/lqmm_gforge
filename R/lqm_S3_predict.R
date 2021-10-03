@@ -1,3 +1,24 @@
+#' Predictions from LQM Objects
+#' 
+#' This function computes predictions based on fitted linear quantile model.
+#' 
+#' 
+#' @aliases predict.lqm predict.lqm.counts
+#' @param object an \code{lqm} or \code{lqm.counts} object.
+#' @param newdata an optional data frame in which to look for variables with
+#' which to predict. If omitted, the fitted values are used.
+#' @param interval logical flag. If \code{TRUE}, bootstrap percentile intervals
+#' for predictions are provided. This argument is for \code{lqm} objects only.
+#' @param level confidence level. This argument is for \code{lqm} objects only.
+#' @param na.action function determining what should be done with missing
+#' values in \code{newdata}. The default is to predict \code{NA}.
+#' @param \dots further arguments passed to \code{boot.lqm}.
+#' @return a vector or a matrix or an array of predictions.
+#' @author Marco Geraci
+#' @seealso \code{\link{residuals.lqm}}, \code{\link{residuals.lqm.counts}},
+#' \code{\link{lqm}}, \code{\link{lqm.counts}}, \code{\link{coef.lqm}},
+#' \code{\link{boot.lqm}}
+#' @keywords prediction
 predict.lqm <- function(object, newdata, interval = FALSE,
                         level = 0.95, na.action = na.pass, ...) {
   tau <- object$tau

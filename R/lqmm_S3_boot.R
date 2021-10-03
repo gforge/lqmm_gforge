@@ -131,6 +131,24 @@ extractBoot.boot.lqmm <- function(object, which = "fixed") {
   return(ans)
 }
 
+
+
+#' Summary for a \code{boot.lqmm} Object
+#' 
+#' This function gives a summary of a botstrapped \code{lqmm} object
+#' 
+#' 
+#' @param object an object of \code{\link{class}} \code{lqmm}.
+#' @param alpha numeric value for the interval confidence level
+#' (\code{1-alpha}).
+#' @param digits a non-null value for digits specifies the minimum number of
+#' significant digits to be printed in values.
+#' @param \dots not used.
+#' @author Marco Geraci
+#' @seealso \code{\link{boot.lqmm}}, \code{\link{lqmm}},
+#' @references Geraci M and Bottai M (2014). Linear quantile mixed models.
+#' Statistics and Computing, 24(3), 461--479. doi: 10.1007/s11222-013-9381-9.
+#' @keywords summary bootstrap
 summary.boot.lqmm <- function(object, alpha = 0.05, digits = max(3, getOption("digits") - 3), ...) {
   est <- attr(object, "estimated")
   R <- attr(object, "R")

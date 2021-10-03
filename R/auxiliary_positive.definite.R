@@ -1,3 +1,16 @@
+#' Test for Positive Definiteness
+#' 
+#' This function tests whether all eigenvalues of a symmetric matrix are
+#' positive. See \code{help("is.positive.definite")} from package
+#' \code{corpcor}.
+#' 
+#' 
+#' @author Original version by Korbinian Strimmer
+#' @source Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte
+#' Silva and Korbinian Strimmer. (2011). corpcor: Efficient Estimation of
+#' Covariance and (Partial) Correlation. R package version 1.6.0.
+#' \url{https://CRAN.R-project.org/package=corpcor}
+#' @keywords positive definite covariance
 is.positive.definite <- function(m, tol, method = c("eigen", "chol")) {
   # source package `corpcor' version 1.6.0 (Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte Silva and Korbinian Strimmer)
 
@@ -30,6 +43,21 @@ is.positive.definite <- function(m, tol, method = c("eigen", "chol")) {
   }
 }
 
+
+
+#' Compute Nearest Positive Definite Matrix
+#' 
+#' This function computes the nearest positive definite of a real symmetric
+#' matrix. See \code{help("make.positive.definite")} from package
+#' \code{corpcor}.
+#' 
+#' 
+#' @author Original version by Korbinian Strimmer
+#' @source Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte
+#' Silva and Korbinian Strimmer. (2011). corpcor: Efficient Estimation of
+#' Covariance and (Partial) Correlation. R package version 1.6.0.
+#' \url{https://CRAN.R-project.org/package=corpcor}
+#' @keywords positive definite covariance
 make.positive.definite <- function(m, tol) {
   # source package `corpcor' version 1.6.0 (Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte Silva and Korbinian Strimmer)
 

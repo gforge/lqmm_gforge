@@ -1,3 +1,13 @@
+#' Extract Log-Likelihood
+#' 
+#' \code{logLik.lqm} extracts the log-likelihood of a fitted LQM.
+#' 
+#' 
+#' @param object an object of \code{\link{class}} "lqm".
+#' @param \dots not used.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqm}} \code{\link{AIC}}
+#' @keywords models
 logLik.lqm <- function(object, ...) {
   tdf <- object$edf + 1
   tau <- object$tau

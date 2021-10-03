@@ -1,3 +1,14 @@
+#' Gaussian Quadrature
+#' 
+#' This function calculates nodes and weights for Gaussian quadrature. See
+#' \code{help("gauss.quad")} from package \code{statmod}.
+#' 
+#' 
+#' @author Original version by Gordon Smyth
+#' @source Gordon Smyth with contributions from Yifang Hu, Peter Dunn and
+#' Belinda Phipson. (2011). statmod: Statistical Modeling. R package version
+#' 1.4.11. \url{https://CRAN.R-project.org/package=statmod}
+#' @keywords gaussian quadrature
 gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0) {
 
   # source `statmod' version 1.4.11 (Gordon Smyth)
@@ -72,6 +83,20 @@ gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0) {
   list(nodes = x, weights = w)
 }
 
+
+
+#' Gaussian Quadrature
+#' 
+#' This function calculates nodes and weights for Gaussian quadrature in terms
+#' of probability distributions. See \code{help("gauss.quad.prob")} from
+#' package \code{statmod}.
+#' 
+#' 
+#' @author Original version by Gordon Smyth
+#' @source Gordon Smyth with contributions from Yifang Hu, Peter Dunn and
+#' Belinda Phipson. (2011). statmod: Statistical Modeling. R package version
+#' 1.4.11. \url{https://CRAN.R-project.org/package=statmod}
+#' @keywords gaussian quadrature
 gauss.quad.prob <- function(n, dist = "uniform", l = 0, u = 1, mu = 0, sigma = 1,
                               alpha = 1, beta = 1) {
 
