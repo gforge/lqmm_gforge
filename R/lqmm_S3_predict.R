@@ -51,9 +51,6 @@
 predict.lqmm <- function(object, level = 0, ...) {
   tau <- object$tau
   nq <- length(tau)
-  group <- object$group
-  M <- object$ngroups
-  q <- object$dim_theta[2]
 
   if (nq == 1) {
     FXD <- object$mmf %*% matrix(object$theta_x)
@@ -61,7 +58,14 @@ predict.lqmm <- function(object, level = 0, ...) {
     FXD <- object$mmf %*% object$theta_x
   }
 
-  if (level == 1) {
+  if (level == 0) {
+    colnames(FXD) <- format(tau, digits = 4)
+    ans <- FXD[object$revOrder, ]
+  } else if (level == 1) {
+    group <- object$group
+    M <- object$ngroups
+    q <- object$dim_theta[2]
+
     RE <- ranef(object)
     mmr.l <- split(object$mmr, group)
     if (nq == 1) {
@@ -81,16 +85,12 @@ predict.lqmm <- function(object, level = 0, ...) {
         RND[, j] <- tmp
       }
     }
-  }
 
-  if (level == 0) {
-    colnames(FXD) <- format(tau, digits = 4)
-    ans <- FXD[object$revOrder, ]
-  }
-  if (level == 1) {
     ans <- FXD + RND
     colnames(ans) <- format(tau, digits = 4)
     ans <- ans[object$revOrder, ]
+  } else {
+    stop("Invalid level (0 or 1 allowed): ", level)
   }
 
   return(ans)
