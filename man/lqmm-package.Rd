@@ -3,13 +3,14 @@
 \docType{package}
 \name{lqmm-package}
 \alias{lqmm-package}
-\title{Linear Quantile Models and Linear Quantile Mixed Models
-
+\title{Linear Quantile Models and Linear Quantile Mixed Models}
+\description{
 Fit quantile regression models for independent and hierarchical data
 
 \tabular{ll}{ Package: \tab lqmm\cr Type: \tab Package\cr Version: \tab
 1.5.5\cr Date: \tab 2019-12-12\cr License: \tab GPL (>=2)\cr LazyLoad: \tab
-yes\cr }}
+yes\cr }
+}
 \references{
 Geraci M (2014). Linear quantile mixed models: The lqmm package
 for Laplace quantile regression. Journal of Statistical Software, 57(13),

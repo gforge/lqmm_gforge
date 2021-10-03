@@ -1,9 +1,15 @@
 #' Gaussian Quadrature
-#' 
+#'
 #' This function calculates nodes and weights for Gaussian quadrature. See
 #' \code{help("gauss.quad")} from package \code{statmod}.
-#' 
-#' 
+#'
+#'
+#' @param n number of nodes and weigh
+#' @param kind kind of Gaussian quadrature, one of "legendre", "chebyshev1", "chebyshev2",
+#'  "hermite", "jacobi" or "laguerre"
+#' @param alpha parameter for Jacobi or Laguerre quadrature, must be greater than -1
+#' @param beta parameter for Jacobi quadrature, must be greater than -1
+#'
 #' @author Original version by Gordon Smyth
 #' @source Gordon Smyth with contributions from Yifang Hu, Peter Dunn and
 #' Belinda Phipson. (2011). statmod: Statistical Modeling. R package version
@@ -86,17 +92,28 @@ gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0) {
 
 
 #' Gaussian Quadrature
-#' 
+#'
 #' This function calculates nodes and weights for Gaussian quadrature in terms
 #' of probability distributions. See \code{help("gauss.quad.prob")} from
 #' package \code{statmod}.
-#' 
-#' 
+#'
+#' @param dist distribution that Gaussian quadrature is based on, one of "uniform", "normal",
+#'  "beta" or "gamma"
+#' @param l lower limit of uniform distribution
+#' @param u upper limit of uniform distribution
+#' @param mu mean of normal distribution
+#' @param sigma standard deviation of normal distribution
+#' @param alpha positive shape parameter for gamma distribution or first shape parameter for beta
+#'  distribution
+#' @param beta positive scale parameter for gamma distribution or second shape parameter for
+#'  beta distribution
+#'
 #' @author Original version by Gordon Smyth
 #' @source Gordon Smyth with contributions from Yifang Hu, Peter Dunn and
 #' Belinda Phipson. (2011). statmod: Statistical Modeling. R package version
 #' 1.4.11. \url{https://CRAN.R-project.org/package=statmod}
 #' @keywords gaussian quadrature
+#' @inheritParams gauss.quad
 gauss.quad.prob <- function(n, dist = "uniform", l = 0, u = 1, mu = 0, sigma = 1,
                               alpha = 1, beta = 1) {
 

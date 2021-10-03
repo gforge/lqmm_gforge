@@ -8,6 +8,12 @@
 \title{The Asymmetric Laplace Distribution}
 \usage{
 dal(x, mu = 0, sigma = 1, tau = 0.5, log = FALSE)
+
+pal(x, mu = 0, sigma = 1, tau = 0.5)
+
+ral(n, mu = 0, sigma = 1, tau = 0.5)
+
+qal(x, mu = 0, sigma = 1, tau = 0.5)
 }
 \arguments{
 \item{x}{vector of quantiles (\code{dal}, \code{pal}) or probabilities

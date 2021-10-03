@@ -2,6 +2,7 @@
 % Please edit documentation in R/lqm_S3_predict.R
 \name{predict.lqm}
 \alias{predict.lqm}
+\alias{predict.lqm.counts}
 \title{Predictions from LQM Objects}
 \usage{
 \method{predict}{lqm}(
@@ -32,6 +33,12 @@ a vector or a matrix or an array of predictions.
 \description{
 This function computes predictions based on fitted linear quantile model.
 }
+\seealso{
+\code{\link{residuals.lqm}}, \code{\link{residuals.lqm.counts}},
+\code{\link{lqm}}, \code{\link{lqm.counts}}, \code{\link{coef.lqm}},
+\code{\link{boot.lqm}}
+}
 \author{
 Marco Geraci
 }
+\keyword{prediction}

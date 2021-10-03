@@ -12,6 +12,15 @@ Covariance and (Partial) Correlation. R package version 1.6.0.
 \usage{
 is.positive.definite(m, tol, method = c("eigen", "chol"))
 }
+\arguments{
+\item{m}{a matrix (assumed to be real and symmetric)}
+
+\item{tol}{tolerance for singular values and for absolute eigenvalues - only those with values
+larger than tol are considered non-zero (default: tol = max(dim(m))*max(D)*.Machine$double.eps)}
+
+\item{method}{Determines the method to check for positive definiteness: eigenvalue computation
+(eigen, default) or Cholesky decomposition (chol).}
+}
 \description{
 This function tests whether all eigenvalues of a symmetric matrix are
 positive. See \code{help("is.positive.definite")} from package

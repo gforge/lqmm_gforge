@@ -1,10 +1,15 @@
 #' Test for Positive Definiteness
-#' 
+#'
 #' This function tests whether all eigenvalues of a symmetric matrix are
 #' positive. See \code{help("is.positive.definite")} from package
 #' \code{corpcor}.
-#' 
-#' 
+#'
+#' @param m a matrix (assumed to be real and symmetric)
+#' @param tol tolerance for singular values and for absolute eigenvalues - only those with values
+#'   larger than tol are considered non-zero (default: tol = max(dim(m))*max(D)*.Machine$double.eps)
+#' @param method Determines the method to check for positive definiteness: eigenvalue computation
+#'   (eigen, default) or Cholesky decomposition (chol).
+#'
 #' @author Original version by Korbinian Strimmer
 #' @source Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte
 #' Silva and Korbinian Strimmer. (2011). corpcor: Efficient Estimation of
@@ -46,18 +51,19 @@ is.positive.definite <- function(m, tol, method = c("eigen", "chol")) {
 
 
 #' Compute Nearest Positive Definite Matrix
-#' 
+#'
 #' This function computes the nearest positive definite of a real symmetric
 #' matrix. See \code{help("make.positive.definite")} from package
 #' \code{corpcor}.
-#' 
-#' 
+#'
+#'
 #' @author Original version by Korbinian Strimmer
 #' @source Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte
 #' Silva and Korbinian Strimmer. (2011). corpcor: Efficient Estimation of
 #' Covariance and (Partial) Correlation. R package version 1.6.0.
 #' \url{https://CRAN.R-project.org/package=corpcor}
 #' @keywords positive definite covariance
+#' @inheritParams is.positive.definite
 make.positive.definite <- function(m, tol) {
   # source package `corpcor' version 1.6.0 (Juliane Schaefer, Rainer Opgen-Rhein, Verena Zuber, A. Pedro Duarte Silva and Korbinian Strimmer)
 

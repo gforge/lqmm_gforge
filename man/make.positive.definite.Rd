@@ -12,6 +12,12 @@ Covariance and (Partial) Correlation. R package version 1.6.0.
 \usage{
 make.positive.definite(m, tol)
 }
+\arguments{
+\item{m}{a matrix (assumed to be real and symmetric)}
+
+\item{tol}{tolerance for singular values and for absolute eigenvalues - only those with values
+larger than tol are considered non-zero (default: tol = max(dim(m))*max(D)*.Machine$double.eps)}
+}
 \description{
 This function computes the nearest positive definite of a real symmetric
 matrix. See \code{help("make.positive.definite")} from package

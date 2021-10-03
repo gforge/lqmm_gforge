@@ -11,6 +11,16 @@ Belinda Phipson. (2011). statmod: Statistical Modeling. R package version
 \usage{
 gauss.quad(n, kind = "legendre", alpha = 0, beta = 0)
 }
+\arguments{
+\item{n}{number of nodes and weigh}
+
+\item{kind}{kind of Gaussian quadrature, one of "legendre", "chebyshev1", "chebyshev2",
+"hermite", "jacobi" or "laguerre"}
+
+\item{alpha}{parameter for Jacobi or Laguerre quadrature, must be greater than -1}
+
+\item{beta}{parameter for Jacobi quadrature, must be greater than -1}
+}
 \description{
 This function calculates nodes and weights for Gaussian quadrature. See
 \code{help("gauss.quad")} from package \code{statmod}.

@@ -68,6 +68,7 @@
 #' @param contrasts not yet implemented.
 #' @param fit logical flag. If FALSE the function returns a list of arguments
 #' to be passed to \code{lqmm.fit}.
+#'
 #' @return \code{lqmm} returns an object of \code{\link{class}} \code{lqmm}.
 #'
 #' The function \code{summary} is used to obtain and print a summary of the
@@ -333,6 +334,7 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
   fit$df <- dim_theta[1] + dim_theta_z + 1
   fit$tau <- tau
   fit$mmf <- as.matrix(modelData$mmf)
+  fit$mmf_df <- modelData$mmf_df
   fit$mmr <- as.matrix(mmr)
   fit$y <- y
   fit$revOrder <- attr(modelData, "revOrder")

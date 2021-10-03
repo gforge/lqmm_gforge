@@ -1,4 +1,6 @@
-predint.lqmm <- function(object, level = 0, alpha = 0.05, R = 50, seed = round(runif(1, 1, 10000))) {
+
+#' @rdname lqmm_predictions
+predint.lqmm <- function(object, level = 0, alpha = 0.05, R = 50, seed = round(runif(1, 1, 10000)), newdata) {
   tau <- object$tau
   nq <- length(object$tau)
   p <- object$dim_theta[1]
@@ -14,7 +16,7 @@ predint.lqmm <- function(object, level = 0, alpha = 0.05, R = 50, seed = round(r
       tmp$theta_x <- B[i, 1:p]
       tmp$theta_z <- B[i, (p + 1):(p + m)]
       tmp$scale <- B[i, (p + m + 1)]
-      yhat[, i] <- predict(tmp, level = level)
+      yhat[, i] <- predict(tmp, newdata = newdata, level = level)
     }
     LB <- apply(yhat, 1, quantile, probs = alpha / 2)
     UB <- apply(yhat, 1, quantile, probs = 1 - alpha / 2)
@@ -29,7 +31,7 @@ predint.lqmm <- function(object, level = 0, alpha = 0.05, R = 50, seed = round(r
         tmp$theta_x <- B[i, 1:p, j]
         tmp$theta_z <- B[i, (p + 1):(p + m), j]
         tmp$scale <- B[i, (p + m + 1), j]
-        yhat[, i] <- predict(tmp, level = level)
+        yhat[, i] <- predict(tmp, newdata = newdata, level = level)
       }
       LB <- apply(yhat, 1, quantile, probs = alpha / 2)
       UB <- apply(yhat, 1, quantile, probs = 1 - alpha / 2)

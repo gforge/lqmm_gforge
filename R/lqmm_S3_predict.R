@@ -13,13 +13,14 @@
 #' quantiles only for the median (\code{tau=0.5}). Therefore, predictions at
 #' the population level (\code{code=0}) should be interpreted analogously.
 #'
-#' @aliases predint predint.lqmm predict.lqmm
 #' @param object an \code{lqmm} object.
 #' @param level an optional integer vector giving the level of grouping to be
 #' used in obtaining the predictions.
 #' @param alpha 1-\code{alpha} is the confidence level.
 #' @param R number of bootstrap replications.
 #' @param seed optional random number generator seed.
+#' @param newdata Defaults to the original data used for generating the model.
+#'  Currently only implemented for `level = 0` predictions.
 #' @param \dots not used.
 #' @return a vector or a matrix of predictions for \code{predict.lqmm}. A data
 #' frame or a list of data frames for \code{predint.lqmm} containing
@@ -31,6 +32,7 @@
 #' @references Geraci M and Bottai M (2014). Linear quantile mixed models.
 #' Statistics and Computing, 24(3), 461--479.
 #' @keywords prediction
+#' @rdname lqmm_predictions
 #' @examples
 #'
 #' ## Orthodont data
@@ -48,19 +50,28 @@
 #'
 #' # 95% confidence intervals
 #' predint(fitOi.lqmm, level = 0, alpha = 0.05)
-predict.lqmm <- function(object, level = 0, ...) {
+predict.lqmm <- function(object, level = 0, newdata, ...) {
   tau <- object$tau
   nq <- length(tau)
 
+  mmf <- object$mmf
+  revOrder <- object$revOrder
+  if (!missing(newdata)) {
+    if (level != 0) stop("The newdata argument is only implemented for non-random effect estimates")
+    modelData <- buildModelData(object$call, data = newdata, existingModelDF = object$mmf_df)
+    mmf <- modelData$mmf
+    revOrder <- 1:nrow(mmf)
+  }
+
   if (nq == 1) {
-    FXD <- object$mmf %*% matrix(object$theta_x)
+    FXD <- mmf %*% matrix(object$theta_x)
   } else {
-    FXD <- object$mmf %*% object$theta_x
+    FXD <- mmf %*% object$theta_x
   }
 
   if (level == 0) {
     colnames(FXD) <- format(tau, digits = 4)
-    ans <- FXD[object$revOrder, ]
+    ans <- FXD[revOrder, ]
   } else if (level == 1) {
     group <- object$group
     M <- object$ngroups

@@ -108,6 +108,7 @@ bandwidth.rq <- function(p, n, hs = TRUE, alpha = 0.05) {
 #' @author Marco Geraci
 #' @seealso \code{\link{lqmm}}, \code{\link{lqm}}
 #' @keywords asymmetric Laplace distribution
+#' @rdname asymetric_laplace
 dal <- function(x, mu = 0, sigma = 1, tau = 0.5, log = FALSE) {
   eps <- .Machine$double.eps^(2 / 3)
   if (any(tau > 1) | any(tau < 0)) stop("Parameter 'tau' must be in [0,1]")
@@ -122,6 +123,7 @@ dal <- function(x, mu = 0, sigma = 1, tau = 0.5, log = FALSE) {
   if (log) log(val) else val
 }
 
+#' @rdname asymetric_laplace
 pal <- function(x, mu = 0, sigma = 1, tau = 0.5) {
   eps <- .Machine$double.eps^(2 / 3)
   if (any(tau > 1) | any(tau < 0)) stop("Parameter 'tau' must be in [0,1]")
@@ -134,6 +136,7 @@ pal <- function(x, mu = 0, sigma = 1, tau = 0.5) {
   )
 }
 
+#' @rdname asymetric_laplace
 ral <- function(n, mu = 0, sigma = 1, tau = 0.5) {
   eps <- .Machine$double.eps^(2 / 3)
   if (any(tau > 1) | any(tau < 0)) stop("Parameter 'tau' must be in [0,1]")
@@ -150,6 +153,7 @@ ral <- function(n, mu = 0, sigma = 1, tau = 0.5) {
   ifelse(x1 < mu, x1, x2)
 }
 
+#' @rdname asymetric_laplace
 qal <- function(x, mu = 0, sigma = 1, tau = 0.5) {
   if (any(x > 1) | any(x < 0)) stop("x must be in [0,1]")
 
@@ -183,7 +187,7 @@ qal <- function(x, mu = 0, sigma = 1, tau = 0.5) {
 #' @param mu location parameter.
 #' @param sigma scale parameter.
 #' @param tau skewness parameter.
-#' @param x numeric value.
+#'
 #' @author Marco Geraci
 #' @seealso \code{\link{dal}}, \code{\link{mleAL}}
 #' @references Yu K and Zhang J (2005). A three-parameter asymmetric Laplace

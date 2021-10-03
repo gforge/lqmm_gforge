@@ -20,6 +20,26 @@ gauss.quad.prob(
   beta = 1
 )
 }
+\arguments{
+\item{n}{number of nodes and weigh}
+
+\item{dist}{distribution that Gaussian quadrature is based on, one of "uniform", "normal",
+"beta" or "gamma"}
+
+\item{l}{lower limit of uniform distribution}
+
+\item{u}{upper limit of uniform distribution}
+
+\item{mu}{mean of normal distribution}
+
+\item{sigma}{standard deviation of normal distribution}
+
+\item{alpha}{positive shape parameter for gamma distribution or first shape parameter for beta
+distribution}
+
+\item{beta}{positive scale parameter for gamma distribution or second shape parameter for
+beta distribution}
+}
 \description{
 This function calculates nodes and weights for Gaussian quadrature in terms
 of probability distributions. See \code{help("gauss.quad.prob")} from

@@ -14,8 +14,6 @@ meanAL(mu, sigma, tau)
 \item{sigma}{scale parameter.}
 
 \item{tau}{skewness parameter.}
-
-\item{x}{numeric value.}
 }
 \description{
 Accessory functions.
