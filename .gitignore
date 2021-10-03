@@ -19,3 +19,6 @@ Meta
 *.tex
 
 .vscode
+
+src/*.so
+src/*.o

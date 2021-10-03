@@ -1,4 +1,4 @@
-useDynLib(lqmm, .registration=TRUE)
+useDynLib(lqmmGforge, .registration=TRUE)
 
 import("stats")
 import("SparseGrid")

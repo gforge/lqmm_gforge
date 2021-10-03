@@ -1,17 +1,17 @@
 #' Linear Quantile Mixed Models Fitting by Gradient Search
-#' 
+#'
 #' This function controls the arguments to be passed to routines written in C
 #' for LQMM estimation. The optimization algorithm is based on the gradient of
 #' the Laplace log--likelihood (Bottai, Orsini and Geraci, 2014; Geraci and
 #' Bottai, 2014).
-#' 
+#'
 #' In \code{\link{lqmm}}, see argument \code{fit} for generating a list of
 #' arguments to be called by this function; see argument \code{covariance} for
 #' alternative variance--covariance matrices.
-#' 
+#'
 #' NOTE: the data should be ordered by \code{group} when passed to
 #' \code{lqmm.fit.gs} (such ordering is performed by \code{\link{lqmm}}).
-#' 
+#'
 #' @param theta_0 starting values for the linear predictor.
 #' @param x the model matrix for fixed effects (see details).
 #' @param y the model response (see details).
@@ -27,7 +27,7 @@
 #' @param control list of control parameters used for optimization (see
 #' \code{\link{lqmmControl}}).
 #' @return An object of class "list" containing the following components:
-#' 
+#'
 #' \item{theta}{a vector of coefficients, including the "raw"
 #' variance--covariance parameters (see \code{\link{VarCorr.lqmm}}).}
 #' \item{scale}{the scale parameter.} \item{gradient}{the gradient.}
@@ -38,24 +38,24 @@
 #' @references Bottai M, Orsini N, Geraci M. (2014). A gradient search
 #' maximization algorithm for the asymmetric Laplace likelihood, Journal of
 #' Statistical Computation and Simulation (in press).
-#' 
+#'
 #' Geraci M and Bottai M (2014). Linear quantile mixed models. Statistics and
 #' Computing, 24(3), 461--479.
 #' @keywords fitting
 #' @examples
-#' 
+#'
 #' set.seed(123)
-#' 
+#'
 #' M <- 50
 #' n <- 10
 #' test <- data.frame(x = runif(n*M,0,1), group = rep(1:M,each=n))
 #' test$y <- 10*test$x + rep(rnorm(M, 0, 2), each = n) + rchisq(n*M, 3)
 #' lqmm.ls <- lqmm(fixed = y ~ x, random = ~ 1, group = group,
 #' 	data = test, fit = FALSE)
-#' 
+#'
 #' do.call("lqmm.fit.gs", lqmm.ls)
-#' 
-#' 
+#'
+#'
 lqmm.fit.gs <- function(theta_0, x, y, z, weights, cov_name, V, W, sigma_0, tau, group, control) {
   if (length(tau) > 1) {
     tau <- tau[1]
@@ -98,7 +98,7 @@ lqmm.fit.gs <- function(theta_0, x, y, z, weights, cov_name, V, W, sigma_0, tau,
       as.integer(maxn), as.double(control$LP_step), as.double(control$beta), as.double(control$gamma), as.integer(control$reset_step),
       as.double(control$LP_tol_ll), as.double(control$LP_tol_theta), as.integer(control$check_theta), as.integer(control$LP_max_iter),
       as.integer(control$verbose), low_loop = integer(1), double(1), grad = double(p + m), opt_val = double(1)
-    ) # , PACKAGE = "lqmm")
+    ) # , PACKAGE = "lqmmGforge")
 
     theta_1 <- ans$theta
     grad <- ans$grad

@@ -1,4 +1,4 @@
-Package: lqmm
+Package: lqmmGforge
 Type: Package
 Title: Linear Quantile Mixed Models
 Version: 1.6.0
@@ -7,8 +7,7 @@ Authors@R: c(person("Marco", "Geraci", role = c("aut", "cre"),
                      email = "geraci@mailbox.sc.edu"),
               person("Max", "Gordon", role = "ctb",
                      email = "max@gforge.se"))
-                     Author: 
-Depends: R (>= 4.1.1)
+Depends: R (>= 4.1.0)
 Imports: stats, utils, nlme (>= 3.1-124), SparseGrid
 Description: Functions to fit quantile regression models for hierarchical
     data (2-level nested designs) as described in Geraci and
