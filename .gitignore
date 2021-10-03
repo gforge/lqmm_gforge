@@ -1,0 +1,19 @@
+# History files
+.Rhistory
+
+# Example code in package build process
+*-Ex.R
+
+# R data files from past sessions
+.Rdata
+
+# RStudio files
+.Rproj.user
+
+# Doc stuff to ignore
+tests/visual_tests/*.html
+tests/visual_tests/*.css
+inst/doc
+doc
+Meta
+*.tex
