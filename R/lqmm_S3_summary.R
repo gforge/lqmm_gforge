@@ -1,3 +1,34 @@
+#' Summary for an \code{lqmm} Object
+#'
+#' Summary method for class \code{lqmm}.
+#'
+#' \code{print.summary.lqmm} formats the coefficients, standard errors, etc.
+#' and additionally gives `significance stars'.
+#'
+#' @param object an object of \code{\link{class}} \code{lqmm}.
+#' @param method specifies the method used to compute standard errors.
+#' Currently, only the bootstrap method ("boot") is available.
+#' @param alpha significance level.
+#' @param covariance logical flag. If \code{TRUE} the covariance matrix of the
+#' bootstrap estimates is provided.
+#' @param \dots see \code{\link{boot.lqmm}} for additional arguments.
+#' @return an object of class \code{summary.lqmm}. The function
+#' \code{summary.lqmm} computes and returns a list of summary statistics of the
+#' fitted linear quantile mixed model given in \code{object}, using the
+#' components (list elements) from its argument, plus
+#'
+#' \item{Cov}{the covariance matrix obtained from the bootstrapped estimates
+#' (if \code{covariance = TRUE}).} \item{tTable}{a matrix with estimates,
+#' standard errors, etc.} \item{B}{the matrix of all bootstrapped parameters.}
+#' @author Marco Geraci
+#' @seealso \code{\link{print.summary.lqmm}} \code{\link{lqmm}}
+#' @keywords bootstrap standard errors
+#' @examples
+#'
+#' data(Orthodont)
+#' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
+#' 	tau = c(0.1,0.5,0.9), data = Orthodont)
+#' summary(fitOi.lqmm)
 summary.lqmm <- function(object, method = "boot", alpha = 0.05, covariance = FALSE, ...) {
   tau <- object$tau
   nq <- length(tau)
@@ -71,6 +102,18 @@ summary.lqmm <- function(object, method = "boot", alpha = 0.05, covariance = FAL
   return(object)
 }
 
+#' Print an \code{lqmm} Summary Object
+#'
+#' Print summary of an \code{lqmm} object.
+#'
+#'
+#' @param x a \code{summary.lqmm} object.
+#' @param digits a non-null value for digits specifies the minimum number of
+#' significant digits to be printed in values.
+#' @param \dots not used.
+#' @author Marco Geraci
+#' @seealso \code{\link{lqmm}}, \code{\link{summary.lqmm}}
+#' @keywords print summary
 print.summary.lqmm <- function(x, digits = max(3, getOption("digits") - 3), ...) {
   tau <- x$tau
   nq <- length(tau)
