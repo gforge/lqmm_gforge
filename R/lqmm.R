@@ -1,8 +1,8 @@
 #' Fitting Linear Quantile Mixed Models
-#' 
+#'
 #' \code{lqmm} is used to fit linear quantile mixed models based on the
 #' asymmetric Laplace distribution.
-#' 
+#'
 #' The function computes an estimate on the tau-th quantile function of the
 #' response, conditional on the covariates, as specified by the \code{formula}
 #' argument, and on random effects, as specified by the \code{random} argument.
@@ -14,31 +14,31 @@
 #' alternative optimization algorithm is based on a Nelder-Mead algorithm
 #' (\code{control = list(method = "df")}) via \code{\link{optim}}. The scale
 #' parameter is optimized in a refinement step via \code{\link{optimize}}.
-#' 
+#'
 #' Quadrature approaches include Gauss-Hermite (\code{type = "normal"}) and
 #' Gauss-Laguerre (\code{type = "robust"}) quadrature. The argument \code{rule}
 #' takes one of the following: 1 (product rule quadrature), 2 (sparse grid
 #' quadrature), 3 (nested quadrature rule - only for \code{type = "normal"}), 4
 #' (quadrature rule with the smallest number of nodes between rules 1 or 2).
 #' Rules 2 and 3 have not yet been tested extensively.
-#' 
+#'
 #' Different standard types of positive--definite matrices for the random
 #' effects can be specified: \code{pdIdent} multiple of an identity;
 #' \code{pdCompSymm} compound symmetry structure (constant diagonal and
 #' constant off--diagonal elements); \code{pdDiag} diagonal; \code{pdSymm}
 #' general positive--definite matrix, with no additional structure.
-#' 
+#'
 #' Weights are given to clusters, therefore it is expected that these are
 #' constant within cluster. When the weights are specified in the main call,
 #' then the first value by \code{group} in the vector \code{weights} will be
 #' replicated for the same length of each group. Alternatively, different
 #' weights within the same cluster can be introduced with a direct call to
 #' \code{\link{lqmm.fit.gs} or \link{lqmm.fit.df}}.
-#' 
+#'
 #' The \code{lqmm} vignette can be accessed by typing \code{help(package =
 #' "lqmm")} and then following the link 'User guides, package vignettes and
 #' other documentation'.
-#' 
+#'
 #' @param fixed an object of class \code{\link{formula}} for fixed effects: a
 #' symbolic description of the model to be fitted.
 #' @param random a one-sided formula of the form \code{~x1 + x2 + ... + xn} for
@@ -69,13 +69,13 @@
 #' @param fit logical flag. If FALSE the function returns a list of arguments
 #' to be passed to \code{lqmm.fit}.
 #' @return \code{lqmm} returns an object of \code{\link{class}} \code{lqmm}.
-#' 
+#'
 #' The function \code{summary} is used to obtain and print a summary of the
 #' results.
-#' 
+#'
 #' An object of class \code{lqmm} is a list containing the following
 #' components:
-#' 
+#'
 #' \item{theta}{a vector containing fixed regression coefficients and
 #' parameters of the variance--covariance matrix of the random effects. See
 #' \code{\link{VarCorr.lqmm}} to extract the variance--covariance of the random
@@ -114,77 +114,75 @@
 #' rules for multiple integrals over infinite regions with Gaussian weight.
 #' Journal of Computational and Applied Mathematics, 71(2), 299--309.
 #' <doi:10.1016/0377-0427(95)00232-4>
-#' 
+#'
 #' Geraci M (2014). Linear quantile mixed models: The lqmm package for Laplace
 #' quantile regression. Journal of Statistical Software, 57(13), 1--29.
 #' <doi:10.18637/jss.v057.i13>
-#' 
+#'
 #' Geraci M and Bottai M (2007). Quantile regression for longitudinal data
 #' using the asymmetric Laplace distribution. Biostatistics 8(1), 140--154.
 #' <doi:10.1093/biostatistics/kxj039>
-#' 
+#'
 #' Geraci M and Bottai M (2014). Linear quantile mixed models. Statistics and
 #' Computing, 24(3), 461--479. <doi:10.1007/s11222-013-9381-9>.
-#' 
+#'
 #' Heiss F, and Winschel V (2008). Likelihood approximation by numerical
 #' integration on sparse grids. Journal of Econometrics, 144(1), 62--80.
 #' <doi:10.1016/j.jeconom.2007.12.004>
 #' @keywords quantile regression
 #' @examples
-#' 
-#' 
+#'
+#'
 #' # Test example
 #' set.seed(123)
-#' 
+#'
 #' M <- 50
 #' n <- 10
 #' test <- data.frame(x = runif(n*M,0,1), group = rep(1:M,each=n))
 #' test$y <- 10*test$x + rep(rnorm(M, 0, 2), each = n) + rchisq(n*M, 3)
-#' fit.lqmm <- lqmm(fixed = y ~ x, random = ~ 1, group = group,	
+#' fit.lqmm <- lqmm(fixed = y ~ x, random = ~ 1, group = group,
 #' 	data = test, tau = 0.5, nK = 11, type = "normal")
 #' fit.lqmm
-#' 
-#' #Call: lqmm(fixed = y ~ x, random = ~1, group = group, tau = 0.5, nK = 11, 
+#'
+#' #Call: lqmm(fixed = y ~ x, random = ~1, group = group, tau = 0.5, nK = 11,
 #' #    type = "normal", data = test)
-#' #Quantile 0.5 
-#' 
+#' #Quantile 0.5
+#'
 #' #Fixed effects:
-#' #(Intercept)            x  
-#' #      3.443        9.258  
-#' 
+#' #(Intercept)            x
+#' #      3.443        9.258
+#'
 #' #Covariance matrix of the random effects:
-#' #(Intercept) 
-#' #      3.426 
-#' 
+#' #(Intercept)
+#' #      3.426
+#'
 #' #Residual scale parameter: 0.8697 (standard deviation 2.46)
-#' #Log-likelihood: -1178 
-#' 
-#' #Number of observations: 500 
-#' #Number of groups: 50 
-#' 
-#' 
+#' #Log-likelihood: -1178
+#'
+#' #Number of observations: 500
+#' #Number of groups: 50
+#'
+#'
 #' ## Orthodont data
 #' data(Orthodont)
-#' 
+#'
 #' # Random intercept model
 #' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
 #' 	tau = c(0.1,0.5,0.9), data = Orthodont)
 #' coef(fitOi.lqmm)
-#' 
+#'
 #' # Random slope model
 #' fitOs.lqmm <- lqmm(distance ~ age, random = ~ age, group = Subject,
 #' 	tau = c(0.1,0.5,0.9), cov = "pdDiag", data = Orthodont)
-#' 
+#'
 #' # Extract estimates
 #' VarCorr(fitOs.lqmm)
 #' coef(fitOs.lqmm)
 #' ranef(fitOs.lqmm)
-#' 
+#'
 #' # AIC
 #' AIC(fitOi.lqmm)
 #' AIC(fitOs.lqmm)
-#' 
-#' 
 lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7, type = "normal", rule = 1, data = sys.frame(sys.parent()), subset, weights, na.action = na.fail, control = list(), contrasts = NULL, fit = TRUE) {
   Call <- match.call()
 
