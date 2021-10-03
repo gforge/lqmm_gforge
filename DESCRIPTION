@@ -18,7 +18,7 @@ Description: Functions to fit quantile regression models for hierarchical
     independent	data and for count responses.
 License: GPL (>= 2)
 LazyLoad: yes
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.2
 Encoding: UTF-8
 NeedsCompilation: yes
 Repository: CRAN
