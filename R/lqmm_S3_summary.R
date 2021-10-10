@@ -44,7 +44,8 @@ summary.lqmm <- function(object, method = "boot", alpha = 0.05, covariance = FAL
 
   if (ddf > 0) {
     newF <- update.formula(as.formula(object$call[["fixed"]]), as.formula(. ~ 1))
-    FITNULL <- update(object, fixed = as.formula(newF), evaluate = TRUE)
+    FITNULL <- update(object, fixed = as.formula(newF), evaluate = TRUE,
+                      data = retrieveExpression(object$call$data))
     LR <- -2 * (logLik(FITNULL) - object$logLik)
     if (any(LR < 0)) {
       LR[LR < 0] <- 0
