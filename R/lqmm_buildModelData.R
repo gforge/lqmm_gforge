@@ -19,7 +19,7 @@ buildModelData <- function(modelCall, data, extraModelFrameArgs = list(), xlev =
   groupFormula <- asOneSidedFormula(modelCall$group)
 
   # Build basic input data.frame
-  mfArgs <- c(list(formula = asOneFormula(random, fixed, groupFormula[[2]]),
+  mfArgs <- c(list(formula = asOneFormula(random, fixed[[3]], groupFormula[[2]]),
                    data = retrieveExpression(data),
                    na.action = modelCall$na.action,
                    xlev = xlev),
