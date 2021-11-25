@@ -194,6 +194,9 @@ fitOi.lqmm <- lqmm(distance ~ age,
                    tau = c(0.1, 0.5, 0.9),
                    data = Orthodont)
 coef(fitOi.lqmm)
+predict(fitOi.lqmm,
+        newdata = data.frame(age = 12),
+        level = 0)
 
 # Random slope model
 fitOs.lqmm <- lqmm(distance ~ age,
