@@ -168,13 +168,20 @@
 #' data(Orthodont)
 #'
 #' # Random intercept model
-#' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
-#' 	tau = c(0.1,0.5,0.9), data = Orthodont)
+#' fitOi.lqmm <- lqmm(distance ~ age,
+#'                    random = ~ 1,
+#'                    group = Subject,
+#'                    tau = c(0.1, 0.5, 0.9),
+#'                    data = Orthodont)
 #' coef(fitOi.lqmm)
 #'
 #' # Random slope model
-#' fitOs.lqmm <- lqmm(distance ~ age, random = ~ age, group = Subject,
-#' 	tau = c(0.1,0.5,0.9), cov = "pdDiag", data = Orthodont)
+#' fitOs.lqmm <- lqmm(distance ~ age,
+#'                    random = ~ age,
+#'                    group = Subject,
+#'                    tau = c(0.1,0.5,0.9),
+#'                    cov = "pdDiag",
+#'                    data = Orthodont)
 #'
 #' # Extract estimates
 #' VarCorr(fitOs.lqmm)
@@ -184,7 +191,22 @@
 #' # AIC
 #' AIC(fitOi.lqmm)
 #' AIC(fitOs.lqmm)
-lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7, type = "normal", rule = 1, data = sys.frame(sys.parent()), subset, weights, na.action = na.fail, control = list(), contrasts = NULL, fit = TRUE) {
+lqmm <- function(fixed,
+                 random,
+                 group,
+                 covariance = "pdDiag",
+                 tau = 0.5,
+                 nK = 7,
+                 type = "normal",
+                 rule = 1,
+                 data = sys.frame(sys.parent()),
+                 subset,
+                 weights,
+                 na.action = na.fail,
+                 control = list(),
+                 contrasts = NULL,
+                 fit = TRUE)
+{
   Call <- match.call()
 
   if (any(tau <= 0) | any(tau >= 1)) stop("Quantile index out of range")
@@ -193,8 +215,7 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
   if (!is.data.frame(data)) stop("`data' must be a data frame")
   if (!(type %in% c("normal", "robust"))) stop("type must be either `normal' or `robust'")
 
-
-  # check arguments
+  # check argument
   if (!inherits(fixed, "formula") || length(fixed) != 3) {
     stop("\nFixed-effects model must be a formula of the form \"y ~ x\"")
   }
@@ -202,28 +223,50 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
     stop("\nRandom-effects model must be a formula of the form \" ~ x\"")
   }
 
-
-  ## obtaining model matrices and vectors
-  modelData <- buildModelData(modelCall = Call,
-                              data = data,
-                              extraModelFrameArgs = list(drop.unused.levels = TRUE))
-
-  mmr <- buildMixedEffectMatrix(modelCall = Call,
-                                processedInputData = modelData)
-
-  y <- eval(fixed[[2]], modelData$dataMix)
-
-  # Likelihood weights
-  if (!missing(weights)) weights <- model.weights(modelData$dataMix)[!duplicated(modelData$group)]
-  if (!missing(weights) && is.null(weights)) weights <- rep(1, modelData$ngroups)
-  if (missing(weights)) weights <- rep(1, modelData$ngroups)
-
   ## define dimensions
+  groupFormula <- asOneSidedFormula(Call[["group"]])
+  group <- groupFormula[[2]]
+  mfArgs <- list(formula = asOneFormula(random, fixed, group),
+                 data = data, na.action = na.action)
+  if (!missing(subset)) {
+    mfArgs[["subset"]] <- asOneSidedFormula(Call[["subset"]])[[2]]
+  }
+  if (!missing(weights)) {
+    mfArgs[["weights"]] <- weights
+  }
+  mfArgs$drop.unused.levels <- TRUE
+  dataMix <- do.call("model.frame", mfArgs)
+  origOrder <- row.names(dataMix)
+  for (i in names(contrasts)) contrasts(dataMix[[i]]) = contrasts[[i]]
+  grp <- model.frame(groupFormula, dataMix)
+  ord <- order(unlist(grp, use.names = FALSE))
+  grp <- grp[ord, , drop = TRUE]
+  dataMix <- dataMix[ord, , drop = FALSE]
+  revOrder <- match(origOrder, row.names(dataMix))
+  ngroups <- length(unique(grp))
+  y <- eval(fixed[[2]], dataMix)
+  mmr <- model.frame(random, dataMix)
+  mmr <- model.matrix(random, data = mmr)
+  if (!missing(weights))
+    weights <- model.weights(dataMix)[!duplicated(grp)]
+  if (!missing(weights) && is.null(weights))
+    weights <- rep(1, ngroups)
+  if (missing(weights))
+    weights <- rep(1, ngroups)
+  contr <- attr(mmr, "contr")
+  mmf <- model.frame(fixed, dataMix)
+  Terms <- attr(mmf, "terms")
+  auxContr <- lapply(mmf, function(el) if (inherits(el, "factor") &&
+                                           length(levels(el)) > 1)
+    contrasts(el))
+  contr <- c(contr, auxContr[is.na(match(names(auxContr), names(contr)))])
+  contr <- contr[!unlist(lapply(contr, is.null))]
+  mmf <- model.matrix(fixed, data = mmf)
   cov_name <- covariance
   if (type == "robust" & !(cov_name %in% c("pdIdent", "pdDiag"))) stop("Gauss-Laguerre quadrature available only for uncorrelated random effects.")
 
   dim_theta <- integer(2)
-  dim_theta[1] <- ncol(modelData$mmf)
+  dim_theta[1] <- ncol(mmf)
   dim_theta[2] <- ncol(mmr)
   dim_theta_z <- theta.z.dim(type = cov_name, n = dim_theta[2])
 
@@ -256,15 +299,18 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
 
   # Starting values
   theta_z <- if (type == "normal") rep(1, dim_theta_z) else rep(invvarAL(1, 0.5), dim_theta_z)
-  lmfit <- lm.wfit(x = modelData$mmf, y = y, w = rep(weights, table(modelData$group)))
+  lmfit <- lm.wfit(x = mmf, y = y, w = rep(weights, table(grp)))
   theta_x <- lmfit$coefficients
 
   if (control$startQR) {
-    q_close <- if (nq == 1) tau else 0.5
-    fit_rq <- lqm.fit.gs(
-      theta = theta_x, x = as.matrix(modelData$mmf), y = y, weights = rep(weights, table(modelData$group)), tau = q_close,
-      control = lqmControl(loop_step = sd(as.numeric(y)))
-    )
+    q_close <- if (nq == 1)
+      tau
+    else 0.5
+    fit_rq <- lqm.fit.gs(theta = theta_x,
+                         x = as.matrix(mmf),
+                         y = y, weights = rep(weights, table(grp)),
+                         tau = q_close,
+                         control = lqmControl(loop_step = sd(as.numeric(y))))
     theta_x <- fit_rq$theta
     sigma_0 <- fit_rq$scale
   } else {
@@ -273,8 +319,18 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
   theta_0 <- c(theta_x, theta_z)
 
   ## Create list with all necessary arguments
-  FIT_ARGS <- list(theta_0 = theta_0, x = as.matrix(modelData$mmf), y = y, z = as.matrix(mmr), weights = weights, V = QUAD$nodes, W = QUAD$weights, sigma_0 = sigma_0, tau = tau, group = modelData$group, cov_name = cov_name, control = control)
-
+  FIT_ARGS <- list(theta_0 = theta_0,
+                   x = as.matrix(mmf),
+                   y = y,
+                   z = as.matrix(mmr),
+                   weights = weights,
+                   V = QUAD$nodes,
+                   W = QUAD$weights,
+                   sigma_0 = sigma_0,
+                   tau = tau,
+                   group = grp,
+                   cov_name = cov_name,
+                   control = control)
   if (!fit) {
     return(FIT_ARGS)
   }
@@ -306,7 +362,7 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
     stop("Unknown estimation method (allowed are df & gs): ", method)
   }
 
-  nn <- colnames(modelData$mmf)
+  nn <- colnames(mmf)
   mm <- colnames(mmr)
 
   if (nq > 1) {
@@ -322,7 +378,6 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
     fit$theta_x <- fit$theta[1:dim_theta[1]]
     fit$theta_z <- fit$theta[-(1:dim_theta[1])]
   }
-
   fit$call <- Call
   fit$nn <- nn
   fit$mm <- mm
@@ -333,25 +388,26 @@ lqmm <- function(fixed, random, group, covariance = "pdDiag", tau = 0.5, nK = 7,
   fit$rdf <- fit$nobs - fit$edf
   fit$df <- dim_theta[1] + dim_theta_z + 1
   fit$tau <- tau
-  fit$mmf <- as.matrix(modelData$mmf)
-  fit$mmf_df <- modelData$mmf_df
+  fit$mmf <- as.matrix(mmf)
   fit$mmr <- as.matrix(mmr)
   fit$y <- y
-  fit$revOrder <- attr(modelData, "revOrder")
+  fit$revOrder <- revOrder
   fit$weights <- weights
-  fit$contrasts <- attr(mmr, "contrasts")
-  fit$group <- modelData$group
-  fit$ngroups <- modelData$ngroups
+  fit$contrasts <- contr
+  fit$group <- grp
+  attr(fit$group, "name") <- as.character(groupFormula[[2]])
+  fit$ngroups <- ngroups
   fit$QUAD <- QUAD
   fit$type <- type
   fit$rule <- rule
   fit$InitialPar <- list(theta = theta_0, sigma = sigma_0)
   fit$control <- control
   fit$cov_name <- cov_name
-  fit$levels <- attr(modelData, "levels")
-  # attr(fit$cov_name, "cov_type") <- cov.sel(cov_name)
-  fit$mfArgs <- modelData$mfArgs
-
+  fit$mfArgs <- mfArgs
+  fit$mtf <- terms(fixed)
+  fit$mtr <- terms(random)
+  fit$xlevels <- list(fixed = .getXlevels(fit$mtf, mfArgs),
+                      random = .getXlevels(fit$mtr, mfArgs))
   class(fit) <- "lqmm"
   fit
 }
