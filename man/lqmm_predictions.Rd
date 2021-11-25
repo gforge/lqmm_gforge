@@ -5,7 +5,7 @@
 \alias{predint.lqmm}
 \title{Predictions from an \code{lqmm} Object}
 \usage{
-\method{predict}{lqmm}(object, level = 0, newdata, ...)
+\method{predict}{lqmm}(object, newdata, level = 0, na.action = na.pass, ...)
 
 \method{predint}{lqmm}(
   object,
@@ -19,11 +19,11 @@
 \arguments{
 \item{object}{an \code{lqmm} object.}
 
-\item{level}{an optional integer vector giving the level of grouping to be
-used in obtaining the predictions.}
-
 \item{newdata}{Defaults to the original data used for generating the model.
 Currently only implemented for `level = 0` predictions.}
+
+\item{level}{an optional integer vector giving the level of grouping to be
+used in obtaining the predictions.}
 
 \item{\dots}{not used.}
 
@@ -59,8 +59,7 @@ the population level (\code{code=0}) should be interpreted analogously.
 data(Orthodont)
 
 # Random intercept model
-fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
-	tau = c(0.1,0.5,0.9), data = Orthodont)
+fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject, tau = c(0.1,0.5,0.9), data = Orthodont)
 
 # Predict (y - Xb)
 predict(fitOi.lqmm, level = 0)

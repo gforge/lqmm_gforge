@@ -188,13 +188,20 @@ fit.lqmm
 data(Orthodont)
 
 # Random intercept model
-fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
-	tau = c(0.1,0.5,0.9), data = Orthodont)
+fitOi.lqmm <- lqmm(distance ~ age,
+                   random = ~ 1,
+                   group = Subject,
+                   tau = c(0.1, 0.5, 0.9),
+                   data = Orthodont)
 coef(fitOi.lqmm)
 
 # Random slope model
-fitOs.lqmm <- lqmm(distance ~ age, random = ~ age, group = Subject,
-	tau = c(0.1,0.5,0.9), cov = "pdDiag", data = Orthodont)
+fitOs.lqmm <- lqmm(distance ~ age,
+                   random = ~ age,
+                   group = Subject,
+                   tau = c(0.1,0.5,0.9),
+                   cov = "pdDiag",
+                   data = Orthodont)
 
 # Extract estimates
 VarCorr(fitOs.lqmm)

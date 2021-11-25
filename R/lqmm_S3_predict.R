@@ -39,8 +39,7 @@
 #' data(Orthodont)
 #'
 #' # Random intercept model
-#' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject,
-#' 	tau = c(0.1,0.5,0.9), data = Orthodont)
+#' fitOi.lqmm <- lqmm(distance ~ age, random = ~ 1, group = Subject, tau = c(0.1,0.5,0.9), data = Orthodont)
 #'
 #' # Predict (y - Xb)
 #' predict(fitOi.lqmm, level = 0)
@@ -50,58 +49,103 @@
 #'
 #' # 95% confidence intervals
 #' predint(fitOi.lqmm, level = 0, alpha = 0.05)
-predict.lqmm <- function(object, level = 0, newdata, ...) {
+predict.lqmm <- function(object,
+                         newdata,
+                         level = 0,
+                         na.action = na.pass,
+                         ...)
+{
   tau <- object$tau
   nq <- length(tau)
+  q <- object$dim_theta[2]
+  if (!level %in% c(0, 1)) stop("level must be either 0 (population-averaged) or 1 (conditional)")
 
-  mmf <- object$mmf
-  revOrder <- object$revOrder
   if (!missing(newdata)) {
-    if (level != 0) stop("The newdata argument is only implemented for non-random effect estimates")
-    modelData <- buildModelData(object$call, data = newdata, xlev = object$levels)
-    mmf <- modelData$mmf
-    revOrder <- 1:nrow(mmf)
+    ## check newdata
+    if (!inherits(newdata, "data.frame")) stop("'newdata' must be a data frame")
+    check_that_variable_in_data <- function(x) {
+      model_vars <- all.vars(delete.response(x))
+      if (!all(model_vars %in% names(newdata)))
+        stop("newdata must have all terms in 'fixed' formula from main call",
+             " missing: ", paste(model_vars[!model_vars %in% names(newdata)], collapse = ", "))
+    }
+    check_that_variable_in_data(object$mtf)
+    check_that_variable_in_data(object$mtr)
+
+    ## ordering data by groups
+    if (level == 1) {
+      groupFormula <- asOneSidedFormula(attr(object$group, "name"))
+      grp <- model.frame(groupFormula, newdata)
+      origOrder <- row.names(newdata)
+      ord <- order(unlist(grp, use.names = FALSE))
+      grp <- grp[ord,,drop = TRUE]
+      newdata <- newdata[ord, ,drop = FALSE]
+      revOrder <- match(origOrder, row.names(newdata)) # putting in orig. order
+    } else {
+      grp <- rep(1, times = nrow(newdata))
+      revOrder <- 1:nrow(newdata)
+    }
+
+    ## create data frames
+    mtf <- object$mtf
+    mtr <- object$mtr
+    mtf <- delete.response(mtf)
+    mf <- model.frame(formula(mtf), newdata, na.action = na.action, drop.unused.levels = TRUE, xlev = object$xlevels[['fixed']])
+    mr <- model.frame(formula(mtr), newdata, na.action = na.action, drop.unused.levels = TRUE, xlev = object$xlevels[['random']])
+
+    if (!is.null(cl <- attr(mtf, "dataClasses")))
+      .checkMFClasses(cl, mf)
+    if (!is.null(cl <- attr(mtr, "dataClasses")))
+      .checkMFClasses(cl, mr)
+    object$mmf <- model.matrix(formula(mtf), mf)
+    object$mmr <- model.matrix(formula(mtr), mr)
+
+    object$group <- grp
+    object$revOrder <- revOrder
   }
+  group <- object$group
+  M <- object$ngroups
+
 
   if (nq == 1) {
-    FXD <- mmf %*% matrix(object$theta_x)
+    FXD <- object$mmf %*% matrix(object$theta_x)
   } else {
-    FXD <- mmf %*% object$theta_x
+    FXD <- object$mmf %*% object$theta_x
   }
 
-  if (level == 0) {
-    colnames(FXD) <- format(tau, digits = 4)
-    ans <- FXD[revOrder, ]
-  } else if (level == 1) {
-    group <- object$group
-    M <- object$ngroups
-    q <- object$dim_theta[2]
-
+  if (level == 1) {
     RE <- ranef(object)
     mmr.l <- split(object$mmr, group)
     if (nq == 1) {
       RE.l <- split(RE, unique(group))
       RND <- NULL
       for (i in 1:M) {
-        RND <- rbind(RND, matrix(as.numeric(mmr.l[[i]]), ncol = q) %*% matrix(as.numeric(RE.l[[i]]), nrow = q))
-      }
+        u <- as.numeric(RE.l[[match(names(mmr.l)[i], names(RE.l))]])
+        RND <- rbind(RND, matrix(as.numeric(mmr.l[[i]]), ncol = q) %*% matrix(u, nrow = q))
+      } # for i
     } else {
       RND <- matrix(NA, length(object$y), nq)
       for (j in 1:nq) {
         RE.l <- split(RE[[j]], unique(group))
         tmp <- NULL
         for (i in 1:M) {
-          tmp <- rbind(tmp, matrix(as.numeric(mmr.l[[i]]), ncol = q) %*% matrix(as.numeric(RE.l[[i]]), nrow = q))
-        }
-        RND[, j] <- tmp
-      }
-    }
+          u <- as.numeric(RE.l[[match(names(mmr.l)[i], names(RE.l))]])
+          tmp <- rbind(tmp, matrix(as.numeric(mmr.l[[i]]), ncol = q) %*% matrix(u, nrow = q))
+        } # for i
+        RND[,j] <- tmp
+      } # for j
+    } # else nq
+  } # if level
 
+  if (level == 0) {
+    colnames(FXD) <- format(tau, digits = 4)
+    ans <- FXD[object$revOrder,]
+  }
+
+  if (level == 1) {
     ans <- FXD + RND
     colnames(ans) <- format(tau, digits = 4)
-    ans <- ans[object$revOrder, ]
-  } else {
-    stop("Invalid level (0 or 1 allowed): ", level)
+    ans <- ans[object$revOrder,]
   }
 
   return(ans)
