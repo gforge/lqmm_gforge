@@ -89,8 +89,8 @@ predict.lqmm <- function(object,
     mtf <- object$mtf
     mtr <- object$mtr
     mtf <- delete.response(mtf)
-    mf <- model.frame(formula(mtf), newdata, na.action = na.action, drop.unused.levels = TRUE, xlev = object$xlevels[['fixed']])
-    mr <- model.frame(formula(mtr), newdata, na.action = na.action, drop.unused.levels = TRUE, xlev = object$xlevels[['random']])
+    mf <- model.frame(formula(mtf), newdata, na.action = na.action, drop.unused.levels = FALSE, xlev = object$xlevels[['fixed']])
+    mr <- model.frame(formula(mtr), newdata, na.action = na.action, drop.unused.levels = FALSE, xlev = object$xlevels[['random']])
 
     if (!is.null(cl <- attr(mtf, "dataClasses")))
       .checkMFClasses(cl, mf)

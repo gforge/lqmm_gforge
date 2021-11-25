@@ -168,14 +168,14 @@
 #' data(Orthodont)
 #'
 #' # Random intercept model
-#' fitOi.lqmm <- lqmm(distance ~ age,
+#' fitOi.lqmm <- lqmm(distance ~ age + Sex,
 #'                    random = ~ 1,
 #'                    group = Subject,
 #'                    tau = c(0.1, 0.5, 0.9),
 #'                    data = Orthodont)
 #' coef(fitOi.lqmm)
 #' predict(fitOi.lqmm,
-#'         newdata = data.frame(age = 12),
+#'         newdata = data.frame(age = 12, Sex = "Female"),
 #'         level = 0)
 #'
 #' # Random slope model
@@ -230,7 +230,8 @@ lqmm <- function(fixed,
   groupFormula <- asOneSidedFormula(Call[["group"]])
   group <- groupFormula[[2]]
   mfArgs <- list(formula = asOneFormula(random, fixed, group),
-                 data = data, na.action = na.action)
+                 data = data,
+                 na.action = na.action)
   if (!missing(subset)) {
     mfArgs[["subset"]] <- asOneSidedFormula(Call[["subset"]])[[2]]
   }
@@ -409,8 +410,8 @@ lqmm <- function(fixed,
   fit$mfArgs <- mfArgs
   fit$mtf <- terms(fixed)
   fit$mtr <- terms(random)
-  fit$xlevels <- list(fixed = .getXlevels(fit$mtf, mfArgs),
-                      random = .getXlevels(fit$mtr, mfArgs))
+  fit$xlevels <- list(fixed = .getXlevels(fit$mtf, dataMix),
+                      random = .getXlevels(fit$mtr, dataMix))
   class(fit) <- "lqmm"
   fit
 }
