@@ -14,13 +14,12 @@
 #' the population level (\code{code=0}) should be interpreted analogously.
 #'
 #' @param object an \code{lqmm} object.
-#' @param level an optional integer vector giving the level of grouping to be
-#' used in obtaining the predictions.
-#' @param alpha 1-\code{alpha} is the confidence level.
-#' @param R number of bootstrap replications.
-#' @param seed optional random number generator seed.
-#' @param newdata Defaults to the original data used for generating the model.
-#'  Currently only implemented for `level = 0` predictions.
+#' @param newdata an optional data frame in which to look for variables with which
+#'  to predict. If omitted, the fitted values are produced.
+#' @param level an optional integer vector giving the level of grouping to be used
+#'  in obtaining the predictions.
+#' @param na.action function determining what should be done with missing values in
+#'  \code{newdata}. The default is to predict NA.
 #' @param \dots not used.
 #' @return a vector or a matrix of predictions for \code{predict.lqmm}. A data
 #' frame or a list of data frames for \code{predint.lqmm} containing

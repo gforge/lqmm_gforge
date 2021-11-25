@@ -19,19 +19,16 @@
 \arguments{
 \item{object}{an \code{lqmm} object.}
 
-\item{newdata}{Defaults to the original data used for generating the model.
-Currently only implemented for `level = 0` predictions.}
+\item{newdata}{an optional data frame in which to look for variables with which
+to predict. If omitted, the fitted values are produced.}
 
-\item{level}{an optional integer vector giving the level of grouping to be
-used in obtaining the predictions.}
+\item{level}{an optional integer vector giving the level of grouping to be used
+in obtaining the predictions.}
+
+\item{na.action}{function determining what should be done with missing values in
+\code{newdata}. The default is to predict NA.}
 
 \item{\dots}{not used.}
-
-\item{alpha}{1-\code{alpha} is the confidence level.}
-
-\item{R}{number of bootstrap replications.}
-
-\item{seed}{optional random number generator seed.}
 }
 \value{
 a vector or a matrix of predictions for \code{predict.lqmm}. A data
