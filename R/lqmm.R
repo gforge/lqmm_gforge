@@ -410,8 +410,22 @@ lqmm <- function(fixed,
   fit$mfArgs <- mfArgs
   fit$mtf <- terms(fixed)
   fit$mtr <- terms(random)
-  fit$xlevels <- list(fixed = .getXlevels(fit$mtf, dataMix),
-                      random = .getXlevels(fit$mtr, dataMix))
+
+  # The .getXlevels doesn't handle terms
+  # the correct way
+  customGetXlevels <- function(Terms, m) {
+    xvars <- all.vars(delete.response(Terms))
+    if (length(xvars)) {
+      xlev <- lapply(m[xvars],
+                     function(x) if (is.factor(x))
+                       levels(x)
+                     else if (is.character(x))
+                       levels(as.factor(x)))
+      xlev[!vapply(xlev, is.null, NA)]
+    }
+  }
+  fit$xlevels <- list(fixed = customGetXlevels(fit$mtf, dataMix),
+                      random = customGetXlevels(fit$mtr, dataMix))
   class(fit) <- "lqmm"
   fit
 }
