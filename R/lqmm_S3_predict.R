@@ -63,14 +63,14 @@ predict.lqmm <- function(object,
   if (!missing(newdata)) {
     ## check newdata
     if (!inherits(newdata, "data.frame")) stop("'newdata' must be a data frame")
-    check_that_variable_in_data <- function(x) {
+    check_that_variables_exist_in_newdata <- function(x) {
       model_vars <- all.vars(delete.response(x))
       if (!all(model_vars %in% names(newdata)))
         stop("newdata must have all terms in 'fixed' formula from main call",
              " missing: ", paste(model_vars[!model_vars %in% names(newdata)], collapse = ", "))
     }
-    check_that_variable_in_data(object$mtf)
-    check_that_variable_in_data(object$mtr)
+    check_that_variables_exist_in_newdata(object$mtf)
+    check_that_variables_exist_in_newdata(object$mtr)
 
     ## ordering data by groups
     if (level == 1) {
